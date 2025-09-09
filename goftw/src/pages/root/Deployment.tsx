@@ -1,9 +1,7 @@
 import { motion, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { messages, hints, formStages } from "./config";
-import useNewSite, {
-  type PutSitePayload,
-} from "../../state/tanstack/useNewSite";
+import useNewSite, { type PutSitePayload } from "../../state/tanstack/useNewSite";
 
 interface DeploymentProps {
   animationIntensity: number;
@@ -24,21 +22,19 @@ const Deployment = ({
   const [elapsedTime, setElapsedTime] = useState(0);
   const [started, setStarted] = useState(false);
   const { mutateAsync } = useNewSite();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const item: Variants = {
+  const container: Variants = {
     hidden: { opacity: 0, y: animationIntensity },
     show: { opacity: 1, y: 0 },
   };
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  // Kick off mutation once when deploying
   useEffect(() => {
     if (formStage < formStages.DEPLOYING || !newSiteRequest || started) return;
 
-    // Clear any pending debounce
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // Debounce trigger (500ms for example)
     debounceRef.current = setTimeout(() => {
       setStarted(true);
 
@@ -46,6 +42,7 @@ const Deployment = ({
         .then((resp) => {
           console.log("Deployment success:", resp);
           setFormStage(formStages.SUCCESS);
+
           setTimeout(() => {
             setTitleText(`✅ ${resp.site} ready!`);
             setCurrentTip(
@@ -59,6 +56,7 @@ const Deployment = ({
         .catch((err) => {
           console.error("Deployment error:", err);
           setFormStage(formStages.FAILURE);
+
           setTimeout(() => {
             setTitleText("❌ Deployment failed");
             setTimeout(() => {
@@ -71,16 +69,9 @@ const Deployment = ({
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [
-    formStage,
-    newSiteRequest,
-    started,
-    mutateAsync,
-    setTitleText,
-    setFormStage,
-  ]);
+  }, [formStage, newSiteRequest, started, mutateAsync, setTitleText, setFormStage]);
 
-  // tips cycle every 10s
+  // Cycle tips every 10 seconds
   useEffect(() => {
     if (formStage < formStages.DEPLOYING) return;
 
@@ -95,56 +86,38 @@ const Deployment = ({
     return () => clearInterval(tipInterval);
   }, [formStage]);
 
+  // Cycle deployment messages every 10s
+  useEffect(() => {
+    if (formStage !== formStages.DEPLOYING) return;
+
+    let msgIndex = 0;
+    setTitleText(messages[msgIndex]);
+
+    const msgInterval = setInterval(() => {
+      msgIndex = (msgIndex + 1) % messages.length;
+      setTitleText(messages[msgIndex]);
+    }, 10000);
+
+    const timer = setInterval(() => {
+      setElapsedTime((t) => t + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(msgInterval);
+      clearInterval(timer);
+    };
+  }, [formStage, setTitleText]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // rolling deployment messages when formStage >= 4
-  useEffect(() => {
-    let msgIndex = 0;
-    let charIndex = 0;
-    let typingInterval: ReturnType<typeof setInterval>;
-
-    const typeMessage = () => {
-      if (formStage !== formStages.DEPLOYING) {
-        if (typingInterval) clearInterval(typingInterval);
-      }
-
-      const current = messages[msgIndex];
-      if (charIndex <= current.length && formStage === formStages.DEPLOYING) {
-        setTitleText(current.slice(0, charIndex));
-        charIndex++;
-      } else {
-        clearInterval(typingInterval);
-        setTimeout(() => {
-          msgIndex++;
-          if (msgIndex < messages.length) {
-            charIndex = 0;
-            typingInterval = setInterval(typeMessage, 80);
-          }
-        }, 10000);
-      }
-    };
-
-    typingInterval = setInterval(typeMessage, 80);
-
-    // timer
-    const timer = setInterval(() => {
-      setElapsedTime((t) => t + 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(typingInterval);
-      clearInterval(timer);
-    };
-  }, [formStage, setTitleText]);
-
   return (
     <motion.div
       className="space-y-3 flex flex-col items-center justify-center"
-      variants={item}
+      variants={container}
       initial="hidden"
       animate="show"
       transition={{ type: "spring", stiffness: 80, damping: 18 }}

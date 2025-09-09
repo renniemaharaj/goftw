@@ -1,15 +1,17 @@
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import SubmitForm from "./SubmitForm";
 import Deployment from "./Deployment";
 import type { PutSitePayload } from "../../state/tanstack/useNewSite";
 import { formStages } from "./config";
+import RollingText from "./RollingText";
 
 const Index = () => {
   const [animationIntensity] = useState(20);
   const [formStage, setFormStage] = useState(formStages.HOME);
   const [titleText, setTitleText] = useState("Frappe Deployment");
   const [newSiteRequest, setNewSiteRequest] = useState<PutSitePayload>();
+
   const container: Variants = {
     hidden: { opacity: 0, y: 2 * animationIntensity },
     show: { opacity: 1, y: 0 },
@@ -25,22 +27,13 @@ const Index = () => {
     if (formStage > formStages.HOME && formStage < formStages.DEPLOYING) {
       const timers: ReturnType<typeof setTimeout>[] = [];
 
-      timers.push(
-        setTimeout(() => {
-          setTitleText("Ready? Set.");
-          timers.push(
-            setTimeout(() => {
-              if (formStage === formStages.APPS) {
-                setTitleText("Select your apps.");
-              } else if (formStage === formStages.SITE_NAME) {
-                setTitleText("Set a name.");
-              } else {
-                setTitleText("Ready? Set.");
-              }
-            }, 500)
-          );
-        }, 1000)
-      );
+      if (formStage === formStages.APPS) {
+        setTitleText("Select your apps.");
+      } else if (formStage === formStages.SITE_NAME) {
+        setTitleText("Set a name.");
+      } else {
+        setTitleText("Ready? Set.");
+      }
 
       return () => {
         timers.forEach(clearTimeout);
@@ -62,18 +55,7 @@ const Index = () => {
           staggerChildren: 0.2,
         }}
       >
-        <AnimatePresence mode="wait">
-          <motion.h1
-            key={titleText}
-            className="font-semibold tracking-tight text-3xl"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-          >
-            {titleText}
-          </motion.h1>
-        </AnimatePresence>
+        <RollingText textContent={titleText} />
 
         {formStage === formStages.HOME && (
           <motion.p

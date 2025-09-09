@@ -72,7 +72,7 @@ const SubmitForm = ({
                     value={siteName}
                     onChange={(e) => setSiteName(e.target.value)}
                     className="w-full rounded-xl border p-3 shadow-sm focus:outline-none focus:ring-2"
-                    placeholder="example.localhost"
+                    placeholder="example"
                   />
                 </div>
               </motion.div>
