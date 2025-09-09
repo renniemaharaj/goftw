@@ -2,12 +2,14 @@ import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import SubmitForm from "./SubmitForm";
 import Deployment from "./Deployment";
+import type { PutSitePayload } from "../../state/tanstack/useNewSite";
+import { formStages } from "./config";
 
 const Index = () => {
   const [animationIntensity] = useState(20);
-  const [formStage, setFormStage] = useState(0);
+  const [formStage, setFormStage] = useState(formStages.HOME);
   const [titleText, setTitleText] = useState("Frappe Deployment");
-
+  const [newSiteRequest, setNewSiteRequest] = useState<PutSitePayload>();
   const container: Variants = {
     hidden: { opacity: 0, y: 2 * animationIntensity },
     show: { opacity: 1, y: 0 },
@@ -20,16 +22,31 @@ const Index = () => {
 
   // staged intro
   useEffect(() => {
-    setTimeout(() => {
-      setTitleText("Ready?");
-      setFormStage(1);
-      setTimeout(() => {
-        setTitleText("Ready? Set.");
-        setFormStage(2);
-      }, 500);
-    }, 1000);
-  }, []);
+    if (formStage > formStages.HOME && formStage < formStages.DEPLOYING) {
+      const timers: ReturnType<typeof setTimeout>[] = [];
 
+      timers.push(
+        setTimeout(() => {
+          setTitleText("Ready? Set.");
+          timers.push(
+            setTimeout(() => {
+              if (formStage === formStages.APPS) {
+                setTitleText("Select your apps.");
+              } else if (formStage === formStages.SITE_NAME) {
+                setTitleText("Set a name.");
+              } else {
+                setTitleText("Ready? Set.");
+              }
+            }, 500)
+          );
+        }, 1000)
+      );
+
+      return () => {
+        timers.forEach(clearTimeout);
+      };
+    }
+  }, [formStage, setTitleText]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-center p-6">
@@ -58,17 +75,20 @@ const Index = () => {
           </motion.h1>
         </AnimatePresence>
 
-        {formStage < 4 && (
-          <>
-            <motion.p
-              className="text-lg max-w-[600px] text-muted-foreground leading-relaxed"
-              variants={item}
-              transition={{ type: "spring", stiffness: 80, damping: 18 }}
-            >
-              Quickly set up a new site on our fully managed Frappe cloud.
-              Everything is automated, you just need say go!
-            </motion.p>
+        {formStage === formStages.HOME && (
+          <motion.p
+            className="text-lg max-w-[600px] text-muted-foreground leading-relaxed"
+            variants={item}
+            transition={{ type: "spring", stiffness: 80, damping: 18 }}
+          >
+            Set up a new site effortlessly on our fully managed frappe
+            deployment, where everything is automated and all you need to do is
+            say go.
+          </motion.p>
+        )}
 
+        {formStage < formStages.DEPLOYING && (
+          <>
             <motion.div
               variants={item}
               initial={{ scale: 0.9 }}
@@ -77,19 +97,23 @@ const Index = () => {
             >
               <SubmitForm
                 animationIntensity={animationIntensity}
-                onBegin={() => setFormStage(3)}
+                setFormStage={setFormStage}
                 formStage={formStage}
-                availableApps={["app1", "app2", "app3", "app4"]}
-                onSubmit={() => setFormStage(4)}
+                onSubmit={(siteName: string, apps: string[]) => {
+                  setNewSiteRequest({ site: siteName, apps });
+                  setFormStage(formStages.DEPLOYING);
+                }}
               />
             </motion.div>
           </>
         )}
 
-        {formStage >= 4 && (
+        {formStage >= formStages.DEPLOYING && (
           <Deployment
             animationIntensity={animationIntensity}
             setTitleText={setTitleText}
+            setFormStage={setFormStage}
+            newSiteRequest={newSiteRequest}
             formStage={formStage}
           />
         )}

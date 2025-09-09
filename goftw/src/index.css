@@ -48,6 +48,39 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.holographic-card {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.5s ease-in-out;
+  z-index: 1;
+}
+
+.holographic-card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(0deg, transparent, transparent 30%, pink);
+  transform: rotate(-45deg) translateY(0);
+  opacity: 0;
+  z-index: 0;
+  transition:
+    transform 1s ease,
+    opacity 1s ease;
+  pointer-events: none; /* prevents hover stealing */
+}
+
+.holographic-hover:hover {
+  box-shadow: 0 0 5px black;
+}
+
+.holographic-card:hover::before {
+  transform: rotate(-45deg) translateY(110%);
+  opacity: 0.4;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
