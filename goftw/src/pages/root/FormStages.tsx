@@ -3,6 +3,7 @@ import { Button, TextField } from "@radix-ui/themes";
 import { motion, AnimatePresence } from "framer-motion";
 import useQueryApps from "../../state/tanstack/useQueryApps";
 import { formStages } from "./config";
+import type { App } from "../../state/tanstack/types";
 
 type SubmitFormProps = {
   setFormStage: (stage: number) => void;
@@ -11,7 +12,7 @@ type SubmitFormProps = {
   animationIntensity: number;
 };
 
-const SubmitForm = ({
+const FormStages = ({
   setFormStage,
   onSubmit,
   formStage,
@@ -19,10 +20,11 @@ const SubmitForm = ({
 }: SubmitFormProps) => {
   const [siteName, setSiteName] = useState("");
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
-  const [availableApps, setAvailableApps] = useState<string[]>();
+  const [availableApps, setAvailableApps] = useState<App[]>();
 
   const { data, error, isLoading } = useQueryApps();
 
+  console.log(data)
   const handleToggleApp = useCallback((app: string) => {
     setSelectedApps((prev) =>
       prev.includes(app) ? prev.filter((a) => a !== app) : [...prev, app]
@@ -42,7 +44,7 @@ const SubmitForm = ({
   useEffect(() => {
     if (data) {
       try {
-        setAvailableApps(data as string[]);
+        setAvailableApps(data as App[]);
       } catch {
         console.warn("Malformed app data from API");
       }
@@ -103,17 +105,16 @@ const SubmitForm = ({
                   )}
 
                   {!isLoading && !error && availableApps?.length ? (
-                    <div className="grid grid-cols-2 p-2 gap-2 max-h-40 overflow-y-auto">
+                    <div className="grid grid-cols-3 p-3 gap-2 max-h-40 overflow-y-auto">
                       {availableApps.map((app) => (
                         <Button
-                          key={app}
-                          size="3"
-                          onClick={() => handleToggleApp(app)}
+                          key={app.name}
+                          onClick={() => handleToggleApp(app.name)}
                           variant={
-                            selectedApps.includes(app) ? "soft" : "outline"
+                            selectedApps.includes(app.name) ? "soft" : "outline"
                           }
                         >
-                          {app}
+                          {app.name}
                         </Button>
                       ))}
                     </div>
@@ -153,4 +154,4 @@ const SubmitForm = ({
   );
 };
 
-export default SubmitForm;
+export default FormStages;

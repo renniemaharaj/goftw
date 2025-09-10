@@ -1,10 +1,10 @@
 import { motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
-import SubmitForm from "./SubmitForm";
+import FormStages from "./FormStages";
 import Deployment from "./Deployment";
-import type { PutSitePayload } from "../../state/tanstack/useNewSite";
 import { formStages } from "./config";
 import RollingText from "./RollingText";
+import type { PutSitePayload } from "../../state/tanstack/types";
 
 const Index = () => {
   const [animationIntensity] = useState(20);
@@ -42,9 +42,9 @@ const Index = () => {
   }, [formStage, setTitleText]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center text-center p-6">
+    <main className="flex min-h-screen flex-col items-center justify-center text-center">
       <motion.div
-        className="flex flex-col !w-full space-y-6 items-center justify-center"
+        className="flex flex-col bg-[#171918] !w-full p-10 py-20 space-y-6 items-center justify-center"
         variants={container}
         initial="hidden"
         animate="show"
@@ -77,7 +77,7 @@ const Index = () => {
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 90, damping: 15 }}
             >
-              <SubmitForm
+              <FormStages
                 animationIntensity={animationIntensity}
                 setFormStage={setFormStage}
                 formStage={formStage}

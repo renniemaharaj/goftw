@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryDomains } from "./config";
+import type { App } from "./types";
 
 // useQueryProjects queries domain api for projects using pagination
 const useQueryApps = () => {
-  const query = useQuery<string[]>({
+  const query = useQuery<App[]>({
     queryKey: ["apps"],
     queryFn: async () => {
       const res = await fetch(`${queryDomains.base}/apps`, {
@@ -12,7 +13,7 @@ const useQueryApps = () => {
         // body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Failed to fetch projects");
-      return res.json() as Promise<string[]>;
+      return res.json() as Promise<App[]>;
     },
   });
 

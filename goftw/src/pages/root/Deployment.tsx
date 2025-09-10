@@ -1,7 +1,8 @@
 import { motion, type Variants } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { messages, hints, formStages } from "./config";
-import useNewSite, { type PutSitePayload } from "../../state/tanstack/useNewSite";
+import type { PutSitePayload } from "../../state/tanstack/types";
+import useNewSite from "../../state/tanstack/useNewSite";
 
 interface DeploymentProps {
   animationIntensity: number;

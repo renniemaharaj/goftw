@@ -1,17 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { queryDomains } from "./config";
-
-export interface PutSitePayload {
-  site: string;
-  apps: string[];
-}
-
-interface PutSiteResponse {
-  site: string;
-  apps: string[];
-  url: string;
-
-}
+import type { PutSitePayload, PutSiteResponse } from "./types";
 
 const useNewSite = () => {
   const mutation = useMutation<PutSiteResponse, Error, PutSitePayload>({
