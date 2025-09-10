@@ -23,8 +23,6 @@ const FormStages = ({
   const [availableApps, setAvailableApps] = useState<App[]>();
 
   const { data, error, isLoading } = useQueryApps();
-
-  console.log(data)
   const handleToggleApp = useCallback((app: string) => {
     setSelectedApps((prev) =>
       prev.includes(app) ? prev.filter((a) => a !== app) : [...prev, app]
@@ -41,6 +39,18 @@ const FormStages = ({
     }
   }, [formStage, setFormStage, onSubmit, siteName, selectedApps]);
 
+  const submitBtnText = useCallback(()=>{
+    switch (formStage) {
+      case formStages.HOME:
+        return "Begin"
+        case formStages.APPS:
+        return "Continue"
+        case formStages.SITE_NAME:
+          default:
+        return "Create Site"
+    }
+  },[formStage])
+
   useEffect(() => {
     if (data) {
       try {
@@ -50,6 +60,7 @@ const FormStages = ({
       }
     }
   }, [data]);
+
 
   return (
     <div className="flex flex-col justify-center items-center w-full max-w-md mx-auto space-y-6">
@@ -114,7 +125,7 @@ const FormStages = ({
                             selectedApps.includes(app.name) ? "soft" : "outline"
                           }
                         >
-                          {app.name}
+                          {app.name.toUpperCase()}
                         </Button>
                       ))}
                     </div>
@@ -133,10 +144,10 @@ const FormStages = ({
 
         {formStage < formStages.DEPLOYING && (
           <motion.div
-            key="submit"
-            initial={{ opacity: 0, y: animationIntensity }}
+            key={submitBtnText()}
+            initial={{ opacity: 0, }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -animationIntensity }}
+            exit={{ opacity: 0, }}
             transition={{ type: "spring", stiffness: 80, damping: 20 }}
             className="flex justify-center w-full"
           >
@@ -145,7 +156,7 @@ const FormStages = ({
               disabled={formStage === formStages.SITE_NAME && !siteName}
               className="px-6 shadow-md rounded-xl"
             >
-              Create Site
+              {submitBtnText()}
             </Button>
           </motion.div>
         )}

@@ -9,7 +9,7 @@ import type { PutSitePayload } from "../../state/tanstack/types";
 const Index = () => {
   const [animationIntensity] = useState(20);
   const [formStage, setFormStage] = useState(formStages.HOME);
-  const [titleText, setTitleText] = useState("Frappe Deployment");
+  const [titleText, setTitleText] = useState("Frappe Deployments");
   const [newSiteRequest, setNewSiteRequest] = useState<PutSitePayload>();
 
   const container: Variants = {
@@ -27,13 +27,17 @@ const Index = () => {
     if (formStage > formStages.HOME && formStage < formStages.DEPLOYING) {
       const timers: ReturnType<typeof setTimeout>[] = [];
 
-      if (formStage === formStages.APPS) {
-        setTitleText("Select your apps.");
-      } else if (formStage === formStages.SITE_NAME) {
-        setTitleText("Set a name.");
-      } else {
-        setTitleText("Ready? Set.");
-      }
+      timers.push(
+        setTimeout(() => {
+          if (formStage === formStages.APPS) {
+            setTitleText("Select your apps.");
+          } else if (formStage === formStages.SITE_NAME) {
+            setTitleText("Name your site.");
+          } else {
+            setTitleText("Ready? Set.");
+          }
+        }, 1000)
+      );
 
       return () => {
         timers.forEach(clearTimeout);
@@ -44,7 +48,7 @@ const Index = () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-center">
       <motion.div
-        className="flex flex-col bg-[#171918] !w-full p-10 py-20 space-y-6 items-center justify-center"
+        className="flex flex-col bg-[#171918] !w-full p-10 py-25 space-y-6 items-center justify-center"
         variants={container}
         initial="hidden"
         animate="show"

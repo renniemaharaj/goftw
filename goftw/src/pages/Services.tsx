@@ -1,49 +1,39 @@
-import { Card, Section } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useInView } from "../state/useInView";
+import { services } from "./config";
+import ServiceComp from "./root/Service";
+import React, { useEffect } from "react";
 
-const services = [
-  {
-    title: "Automatic Maintenance",
-    desc: "Your instances are monitored and kept healthy 24/7.",
-  },
-  {
-    title: "Automatic Updates",
-    desc: "Stay up-to-date with the latest features and security patches.",
-  },
-  {
-    title: "Custom Integration",
-    desc: "We support integrations tailored to your business needs.",
-  },
-  { title: "Automatic Backups", desc: "Scheduled backups with safe storage." },
-  {
-    title: "Reliable Service",
-    desc: "Enterprise-grade uptime and scalability.",
-  },
-];
-
-const Services = () => {
+const Services = ({
+  setHeaderTitle,
+}: {
+  setHeaderTitle: (t: string) => void;
+}) => {
   const { ref, isInView } = useInView<HTMLDivElement>();
 
+  useEffect(() => {
+    if (isInView) setHeaderTitle("Services");
+  }, [isInView, setHeaderTitle]);
   return (
-    <Section>
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 50 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
-        className="grid md:grid-cols-3 gap-6"
-      >
-        {services.map((s) => (
-          <Card>
-            <div key={s.title} className="p-4 rounded-lg shadow-md">
-              <h3 className="font-semibold">{s.title}</h3>
-              <p className="text-sm text-gray-500">{s.desc}</p>
-            </div>
-          </Card>
-        ))}
-      </motion.div>
-    </Section>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6 }}
+      className="grid md:grid-cols-3 gap-6"
+    >
+      {services.length > 0
+        ? services.map((s, i) => (
+            <React.Fragment key={i}>
+              <ServiceComp service={s} />
+            </React.Fragment>
+          ))
+        : Array.from({ length: 10 }).map((_, i) => (
+            <React.Fragment key={i}>
+              <ServiceComp />
+            </React.Fragment>
+          ))}
+    </motion.div>
   );
 };
 

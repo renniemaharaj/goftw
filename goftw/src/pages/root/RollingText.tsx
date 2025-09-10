@@ -34,7 +34,7 @@ const RollingText = ({ textContent }: { textContent: string }) => {
 
   return (
     <motion.div
-      className="flex flex-col !w-full space-y-6 items-center justify-center"
+      className="flex flex-col !w-full space-y-6"
       variants={container}
       initial="hidden"
       animate="show"

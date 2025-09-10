@@ -1,12 +1,10 @@
-import { Section } from "@radix-ui/themes";
 import { motion } from "framer-motion";
 import { useInView } from "../../state/useInView";
 
-const FooterSection = () => {
+const Footer = () => {
   const { ref, isInView } = useInView<HTMLDivElement>();
 
   return (
-    <Section>
       <motion.div
         ref={ref}
         initial={{ opacity: 0, y: 30 }}
@@ -16,8 +14,7 @@ const FooterSection = () => {
       >
         <p>© {new Date().getFullYear()} Don't Sue Us. All rights reserved.</p>
       </motion.div>
-    </Section>
   );
 };
 
-export default FooterSection;
+export default Footer;
