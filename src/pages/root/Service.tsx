@@ -1,11 +1,13 @@
+import useThemeContext from "../../state/theme/useThemeContext";
 import type { Service as ServiceType } from "./types";
 import { Card } from "@radix-ui/themes";
 
 const Service = ({ service }: { service?: ServiceType }) => {
+    const {theme} = useThemeContext();
   return (
     <Card>
       {service !==undefined ? (
-        <div className="p-4 rounded-lg shadow-md">
+        <div className={`${theme === "light" && "bg-blue-50"} p-4 rounded-lg shadow-md`}>
           <h3 className="font-semibold">{service.title}</h3>
           <p className="text-sm text-gray-500">{service.description}</p>
         </div>

@@ -5,12 +5,15 @@ import Deployment from "./Deployment";
 import { formStages } from "./config";
 import RollingText from "./RollingText";
 import type { PutSitePayload } from "../../state/tanstack/types";
+import useThemeContext from "../../state/theme/useThemeContext";
 
 const Index = () => {
   const [animationIntensity] = useState(20);
   const [formStage, setFormStage] = useState(formStages.HOME);
   const [titleText, setTitleText] = useState("Frappe Deployments");
   const [newSiteRequest, setNewSiteRequest] = useState<PutSitePayload>();
+
+  const {theme} = useThemeContext();
 
   const container: Variants = {
     hidden: { opacity: 0, y: 2 * animationIntensity },
@@ -48,7 +51,7 @@ const Index = () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-center">
       <motion.div
-        className="flex flex-col bg-[#171918] !w-full p-10 py-25 space-y-6 items-center justify-center"
+        className={`${theme === "dark" ? "bg-[#171918]":"bg-blue-50"} flex flex-col !w-full p-10 py-25 space-y-6 items-center justify-center`}
         variants={container}
         initial="hidden"
         animate="show"

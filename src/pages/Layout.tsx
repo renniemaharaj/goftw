@@ -18,7 +18,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <>
       {/** Header */}
-       <Header show={!isInView} title={headerTitle ?? "Frappe Deployments"} />
+      <Header show={!isInView} title={headerTitle ?? "Frappe Deployments"} />
 
       {/* Animated children */}
       <AnimatePresence>
@@ -43,11 +43,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </Section>
 
       {/* Services sections */}
-      <Section>
+      <Section className="border-t border-t-[#e93d82] p-3">
         <Services setHeaderTitle={setHeaderTitle} />
-      </Section>
-
-      <Section>
         <Footer />
       </Section>
     </>

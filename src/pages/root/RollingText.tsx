@@ -21,7 +21,7 @@ const RollingText = ({ textContent }: { textContent: string }) => {
       } else {
         clearInterval(typingInterval);
       }
-    }, 100);
+    }, 20);
 
     return () => clearInterval(typingInterval);
   }, [textContent]);
@@ -39,20 +39,20 @@ const RollingText = ({ textContent }: { textContent: string }) => {
       initial="hidden"
       animate="show"
       transition={{
-        type: "spring",
-        stiffness: 100,
-        damping: 20,
-        staggerChildren: 0.2,
+        // type: "spring",
+        // stiffness: 100,
+        // damping: 20,
+        // staggerChildren: 0.2,
       }}
     >
       <AnimatePresence mode="wait">
         <motion.h1
           key={writtenText}
           className="font-semibold tracking-tight !text-3xl"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          // initial={{ opacity: 0}}
+          // animate={{ opacity: 1}}
+          // exit={{ opacity: 0 }}
+          transition={{ duration: 0.3, ease: "easeIn" }}
         >
           {writtenText}
         </motion.h1>

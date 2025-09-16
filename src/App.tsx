@@ -5,30 +5,30 @@ import { protectedRoutesFunc, publicRoutesFunc } from "../routing";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import EBoundary from "./pages/404";
-import { useState } from "react";
+// import { useState } from "react";
 
 import { Theme as RadixTheme } from "@radix-ui/themes";
 
-// import { ThemeProvider as LocalThemeProvider } from "./hooks/theme/ThemeProvider";
-// import useThemeContext from "./hooks/theme/useThemeContext";
+import { ThemeProvider as LocalThemeProvider } from "./state/theme/ThemeProvider"
+import useThemeContext from "./state/theme/useThemeContext";
 
 function App() {
   const queryClient = new QueryClient();
   return (
-    // <LocalThemeProvider>
+    <LocalThemeProvider>
     <ErrorBoundary FallbackComponent={EBoundary}>
       {/* React Query */}
       <QueryClientProvider client={queryClient}>
         <AppShell />
       </QueryClientProvider>
     </ErrorBoundary>
-    // </LocalThemeProvider>
+    </LocalThemeProvider>
   );
 }
 
 function AppShell() {
-  // const { theme } = useThemeContext();
-  const [theme] = useState<"dark" | "inherit" | "light">("dark");
+  const { theme } = useThemeContext();
+  // const [theme] = useState<"dark" | "inherit" | "light">("dark");
   return (
     <RadixTheme
       appearance={theme}
